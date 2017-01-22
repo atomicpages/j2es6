@@ -23,6 +23,10 @@ $.Class('infaw.namespace', {
 	init: function (elem, id) {
 		this._element = elem;
 		this._id = id;
+	},
+
+	foo: function (bar) {
+		return bar ? infaw.namespace.PAGE_SIZE : 0;
 	}
 
 });

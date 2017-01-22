@@ -8,7 +8,13 @@ const static_vars = require('./generators/static_vars');
 const static_methods = require('./generators/static_methods');
 const instance_methods = require('./generators/instance_methods');
 
-function convert() {
+function convert(options) {
+
+	const defaultOptions = {
+		constructorName: 'init'
+	};
+
+	const OPTIONS = Object.assign({}, defaultOptions, options);
 
 	'use strict';
 
@@ -18,6 +24,8 @@ function convert() {
 			ranges: true
 			// onComment: function (block, text, start, end) {} // TODO: extract comments and add them to ES6
 		});
+
+		console.log(content.toString() + '\n');
 
 		let es6 = null;
 
@@ -33,17 +41,20 @@ function convert() {
 						es6 = namespaces.buildNamespace(parent.arguments[0].value);
 
 						if (parent.arguments.length === 3) {
-							let staticVars = static_methods.buildStaticMethods(parent.arguments[1], es6.body[es6.body.length - 1].expression.right.body.body);
-							// instance_methods.buildStaticVars(staticVars, es6.body);
+							let classBody = es6.body[es6.body.length - 1].expression.right.body.body;
+
+							let staticVars = static_methods.buildStaticMethods(parent.arguments[1], classBody);
+							static_vars.buildStaticVars(staticVars, es6.body, parent.arguments[0].value);
+							instance_methods.buildInstanceMethods(parent.arguments[2], es6.body[2].expression.right.body.body, OPTIONS);
 						} else {
-							// instance_methods.buildInstanceMethods(parent.arguments[1]);
+							instance_methods.buildInstanceMethods(parent.arguments[1], es6.body[es6.body.length - 1].expression.right.body.body, OPTIONS);
 						}
 					}
 				}
 			}
 		});
 
-		console.log(JSON.stringify(es6).replace(/"(start|end|range)":\s*\[?\d+,?\d+?]?,/g, ''));
+		console.log(astring(es6));
 	});
 
 }

@@ -7,7 +7,7 @@ module.exports = {
 
 		ast.properties.forEach((property, index, array) => {
 			if (property.value.type !== 'FunctionExpression') {
-				staticVariables.push(array.splice(index, 1));
+				staticVariables.push(array.slice(index, index + 1));
 			} else {
 				root.push({
 					type: "MethodDefinition",
