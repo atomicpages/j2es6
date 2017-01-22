@@ -1,0 +1,1 @@
+# jquery-class-to-es6
