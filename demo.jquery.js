@@ -2,7 +2,7 @@
  * Sample class
  * @class
  */
-$.Class('infaw.namespace', {
+$.Class('infaw.idl.common.Utils', {
 	PAGE_SIZE: 20,
 	_instance: undefined,
 

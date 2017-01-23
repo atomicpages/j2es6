@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "acorn": "registry:dt/acorn#4.0.3+20161209082742"
+  }
+}
