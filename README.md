@@ -1,6 +1,6 @@
 # jQuery `$.Class` to ES6/ES2015 Classes
 
-Code tightly coupled to jQuery? Using [jquery-class.js](https://github.com/mach3/jquery-class.js) and you want to make the migration to ES2015 classes? This project allows you to do so.
+Code tightly coupled to jQuery? Using jQueryMX [class.js](https://github.com/jupiterjs/jquerymx/tree/master/class) and you want to make the migration to ES2015 classes? This project allows you to do so.
 
 ### What this Utility Does
 
