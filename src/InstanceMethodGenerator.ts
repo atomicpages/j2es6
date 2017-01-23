@@ -1,8 +1,18 @@
-module.exports = {
+import {Options} from "./typings/options";
 
-	buildInstanceMethods: function (ast, root, options) {
-		ast.properties.forEach((property, index, source) => {
-			if (property.key.name === options.constructorName) {
+export class InstanceMethodGenerator {
+
+	private static _ctorGenerated: boolean = false;
+
+	/**
+	 *
+	 * @param ast
+	 * @param root
+	 * @param options {Options} The name of the constructor.
+	 */
+	public static build(ast: any, root: Object[], options: Options) {
+		ast.properties.forEach((property: any) => {
+			if (property.key.name === options.constructorName && !InstanceMethodGenerator._ctorGenerated) {
 				root.push(this._buildConstructor(property));
 			} else {
 				root.push({
@@ -12,7 +22,7 @@ module.exports = {
 						type: "Identifier",
 						name: property.key.name
 					},
-					static: false,
+					"static": false,
 					kind: "method",
 					value: {
 						type: "FunctionExpression",
@@ -26,9 +36,11 @@ module.exports = {
 				})
 			}
 		});
-	},
+	}
 
-	_buildConstructor: function (property) {
+	private static _buildConstructor(property: any): Object {
+		InstanceMethodGenerator._ctorGenerated = true;
+
 		return {
 			type: "MethodDefinition",
 			computed: property.computed,
@@ -36,7 +48,7 @@ module.exports = {
 				type: "Identifier",
 				name: "constructor"
 			},
-			static: false,
+			"static": false,
 			kind: "constructor",
 			value: {
 				type: "FunctionExpression",
@@ -47,7 +59,7 @@ module.exports = {
 				params: property.value.params,
 				body: property.value.body
 			}
-		}
+		};
 	}
 
-};
+}

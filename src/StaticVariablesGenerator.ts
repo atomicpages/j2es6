@@ -1,12 +1,12 @@
-module.exports = {
+export class StaticVariablesGenerator  {
 
-	buildStaticVars: function (vars, root, namespace) {
-		this._namespace = namespace.split('.');
-		let self = this;
+	public static build(variables: Object[], root: Object[], namespace: string): void {
+		let spaces: string[] = namespace.split('.');
+		let rootNS = spaces.shift();
 
-		vars.forEach(function (variable, index, source) {
-			variable = variable[0];
-			let branch = {
+		variables.forEach((variable: Object[]) => {
+			let v: any = variable[0];
+			let branch: any = {
 				type: "ExpressionStatement",
 				expression: { // namespace.foo._instance = undefined
 					type: "AssignmentExpression",
@@ -17,30 +17,30 @@ module.exports = {
 							type: "MemberExpression",
 							object: {
 								type: "Identifier",
-								name: self._namespace[0]
+								name: rootNS
 							},
 							property: {
 								type: "Identifier",
-								name: self._namespace.slice(1, self._namespace.length).join('.')
+								name: spaces.join('.')
 							},
 							computed: false
 						},
 						property: {
 							type: "Identifier",
-							name: variable.key.name
+							name: v.key.name
 						},
 						computed: false
 					}
 				},
 			};
 
-			if (variable.value.type !== "Literal") {
-				branch.expression.right = variable.value;
+			if (v.value.type !== "Literal") {
+				branch.expression.right = v.value;
 			} else {
 				branch.expression.right = {
-					type: variable.value.type,
-					value: variable.value.value,
-					raw: variable.value.raw
+					type: v.value.type,
+					value: v.value.value,
+					raw: v.value.raw
 				};
 			}
 
@@ -48,4 +48,4 @@ module.exports = {
 		});
 	}
 
-};
+}

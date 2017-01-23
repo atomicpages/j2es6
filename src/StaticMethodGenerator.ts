@@ -1,13 +1,11 @@
-const static_vars = require('./static_vars');
+export class StaticMethodGenerator {
 
-module.exports = {
+	public static build(ast: any, root: Object[], namespace: string[]): Object[] {
+		let staticVars: Object[] = [];
 
-	buildStaticMethods: function (ast, root) {
-		let staticVariables = [];
-
-		ast.properties.forEach((property, index, array) => {
+		ast.properties.forEach((property: any, index: number, array: Object[]) => {
 			if (property.value.type !== 'FunctionExpression') {
-				staticVariables.push(array.slice(index, index + 1));
+				staticVars.push(array.slice(index, index + 1));
 			} else {
 				root.push({
 					type: "MethodDefinition",
@@ -31,7 +29,7 @@ module.exports = {
 			}
 		});
 
-		return staticVariables;
+		return staticVars;
 	}
 
-};
+}

@@ -3,11 +3,6 @@ const acorn = require('acorn');
 const astring = require('astring');
 const traverse = require('ast-traverse');
 
-// const namespaces = require('./generators/namespace');
-// const static_vars = require('./generators/static_vars');
-// const static_methods = require('./generators/static_methods');
-// const instance_methods = require('./generators/instance_methods');
-
 const Generator = require('./dist/generator').Generator;
 
 function convert(options) {
@@ -29,8 +24,6 @@ function convert(options) {
 
 		console.log(content.toString() + '\n');
 
-		let es6 = null;
-
 		traverse(ast, {
 			pre: (node, parent, prop, idx) => {
 				if (node.type === 'MemberExpression') {
@@ -40,23 +33,13 @@ function convert(options) {
 						&& node.property
 						&& node.property.type === 'Identifier'
 						&& node.property.name === 'Class') {
-						es6 = Generator.build(parent.arguments[0].value);
+						let code = astring(Generator.build(parent.arguments, OPTIONS));
 
-						// if (parent.arguments.length === 3) {
-						// 	let classBody = es6.body[es6.body.length - 1].expression.right.body.body;
-						//
-						// 	let staticVars = static_methods.buildStaticMethods(parent.arguments[1], classBody);
-						// 	static_vars.buildStaticVars(staticVars, es6.body, parent.arguments[0].value);
-						// 	instance_methods.buildInstanceMethods(parent.arguments[2], es6.body[2].expression.right.body.body, OPTIONS);
-						// } else {
-						// 	instance_methods.buildInstanceMethods(parent.arguments[1], es6.body[es6.body.length - 1].expression.right.body.body, OPTIONS);
-						// }
+						console.log(code);
 					}
 				}
 			}
 		});
-
-		console.log(astring(es6));
 	});
 
 }
