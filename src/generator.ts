@@ -1,9 +1,9 @@
 import {Options} from "./typings/options";
-import {ClassGenerator} from "./ClassGenerator";
-import {StaticMethodGenerator} from "./StaticMethodGenerator";
-import {StaticVariablesGenerator} from "./StaticVariablesGenerator";
+import {ClassGenerator} from "./generators/ClassGenerator";
+import {StaticMethodGenerator} from "./generators/StaticMethodGenerator";
+import {StaticVariablesGenerator} from "./generators/StaticVariablesGenerator";
 import {ClassDefinition} from "./typings/ClassDefinition";
-import {InstanceMethodGenerator} from "./InstanceMethodGenerator";
+import {InstanceMethodGenerator} from "./generators/InstanceMethodGenerator";
 
 export class Generator {
 

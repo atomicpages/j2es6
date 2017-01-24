@@ -1,4 +1,4 @@
-import {Options} from "./typings/options";
+import {Options} from "../typings/options";
 
 export class InstanceMethodGenerator {
 

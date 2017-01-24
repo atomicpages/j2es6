@@ -102,5 +102,5 @@ If you're already building your static resources with something like [gulp.js](h
 * Provide better CLI interface
 * Make a gulp plugin
 * Setup CI
-* Setup automated API docs
+* ~~Setup automated API docs~~
 * Add tests and linting as part of the acceptance for a successful build on CI

@@ -1,4 +1,4 @@
-import {ClassDefinition} from "./typings/ClassDefinition";
+import {ClassDefinition} from "../typings/ClassDefinition";
 /**
  * Handles the creation of the class statement with namespace assignment.
  * @class

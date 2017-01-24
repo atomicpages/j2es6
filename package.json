@@ -12,7 +12,10 @@
 	"dependencies": {
 		"acorn": "^4.0.4",
 		"ast-traverse": "^0.1.1",
-		"astring": "^0.8.0"
+		"astring": "^0.8.0",
+		"gulp-util": "^3.0.8",
+		"through2": "^2.0.3",
+		"yargs": "^6.6.0"
 	},
 	"scripts": {
 		"test": "mocha"
@@ -21,6 +24,7 @@
 		"chai": "^3.5.0",
 		"del": "^2.2.2",
 		"gulp": "^3.9.1",
+		"gulp-concat": "^2.6.1",
 		"gulp-sourcemaps": "^2.4.0",
 		"gulp-typedoc": "^2.0.2",
 		"gulp-typescript": "^3.1.4",

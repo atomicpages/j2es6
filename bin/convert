@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+const VERSION = '1.0.0';
+
+const argv = require('yargs')
+	.usage('Usage: $0 <src> [options]')
+	.command('<src>', 'Path of files to convert')
+	.example('$0 ~/Desktop/jquery.classes -d ~/Desktop/jquery.classes/es6')
+	.alias('v', 'verbose')
+	.version(() => VERSION)
+	.describe('v', 'Enable verbose mode')
+	.describe('debug', 'Enable debug mode')
+	.alias('d', 'dest')
+	.nargs('d', 1)
+	.describe('d', 'Where to store files after conversion')
+	.demandOption(['d'])
+	.help('h')
+	.alias('h', 'help')
+	.epilog('Copyright (c) 2017')
+	.argv;
+
+require('../dist/cli')(argv._);
