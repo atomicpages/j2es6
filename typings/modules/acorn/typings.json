@@ -1,8 +1,0 @@
-{
-  "resolution": "main",
-  "tree": {
-    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/42fcaf9aee9b23cb4c2f76986b325b3220c570d6/acorn/index.d.ts",
-    "raw": "registry:dt/acorn#4.0.3+20161209082742",
-    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/42fcaf9aee9b23cb4c2f76986b325b3220c570d6/acorn/index.d.ts"
-  }
-}

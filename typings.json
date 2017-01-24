@@ -1,5 +1,9 @@
 {
   "dependencies": {
     "acorn": "registry:dt/acorn#4.0.3+20161209082742"
+  },
+  "globalDependencies": {
+    "chai": "registry:dt/chai#3.4.0+20160926213833",
+    "mocha": "registry:dt/mocha#2.2.5+20170118061455"
   }
 }

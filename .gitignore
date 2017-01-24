@@ -40,3 +40,5 @@ jspm_packages
 yarn.lock
 dist/
 demo.*
+docs/
+typings/

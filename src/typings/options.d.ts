@@ -10,4 +10,14 @@ export interface Options {
 	 */
 	constructorName?: string;
 
+	/**
+	 * Where to place the output. Expecting console or file.
+	 */
+	output?: string;
+
+	/**
+	 * The location where to output the generated files.
+	 */
+	destination?: string;
+
 }

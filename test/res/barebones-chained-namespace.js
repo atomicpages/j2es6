@@ -1,0 +1,1 @@
+$.Class('foo.bar.demo', {}, {});
