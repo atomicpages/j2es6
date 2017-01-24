@@ -9,7 +9,7 @@ export class Generator {
 
 	private options: Options;
 
-	public constructor(public options: Options) {
+	public constructor(options: Options) {
 		this.options = Object.assign({}, options);
 		this.options.constructorName = this.options.constructorName || 'init';
 	}
