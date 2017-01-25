@@ -3,6 +3,7 @@ const fs = require('fs');
 const acorn = require('acorn');
 const astring = require('astring');
 const traverse = require('ast-traverse');
+const glob = require('glob');
 
 const Generator = require('../dist/generator').Generator;
 
@@ -65,6 +66,10 @@ function convert(files, options) {
 	'use strict';
 
 	if (Array.isArray(files)) {
+		if (files.length === 1) {
+			files = glob.sync(path.normalize(files[0]));
+		}
+
 		files.forEach(function (file) {
 			const info = path.parse(file);
 

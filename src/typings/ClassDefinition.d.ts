@@ -18,7 +18,7 @@ export interface ClassLeftAssignment {
 	computed: boolean;
 	type: string;
 	object: ClassObject;
-	property: ClassProperty;
+	property?: ClassProperty;
 }
 
 export interface ClassRightAssignment {

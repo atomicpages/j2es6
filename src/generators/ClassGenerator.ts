@@ -23,7 +23,7 @@ export class ClassGenerator {
 	public static build(namespace: string[]): ClassDefinition {
 		let root = namespace.shift();
 
-		return {
+		let ast: ClassDefinition = {
 			type: "ExpressionStatement",
 			expression: {
 				type: "AssignmentExpression",
@@ -34,17 +34,13 @@ export class ClassGenerator {
 						type: "Identifier",
 						name: root
 					},
-					property: {
-						type: "Identifier",
-						name: namespace.join('.')
-					},
 					computed: false
 				},
 				right: {
 					type: "ClassExpression",
 					id: {
 						type: "Identifier",
-						name: ClassGenerator._ucfirst(namespace[namespace.length - 1])
+						name: ClassGenerator._ucfirst(namespace.length > 0 ? namespace[namespace.length - 1] : root)
 					},
 					superClass: null,
 					body: {
@@ -54,6 +50,15 @@ export class ClassGenerator {
 				}
 			}
 		};
+
+		if (namespace && namespace.length > 0) {
+			ast.expression.left.property = {
+				type: "Identifier",
+				name: namespace.join('.')
+			};
+		}
+
+		return ast;
 	}
 
 }

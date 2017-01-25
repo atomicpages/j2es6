@@ -13,6 +13,7 @@
 		"acorn": "^4.0.4",
 		"ast-traverse": "^0.1.1",
 		"astring": "^0.8.0",
+		"glob": "^7.1.1",
 		"gulp-util": "^3.0.8",
 		"through2": "^2.0.3",
 		"yargs": "^6.6.0"
