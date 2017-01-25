@@ -12,13 +12,14 @@ gulp.task('clean', function () {
 });
 
 gulp.task('scripts', ['clean', 'generators'], function () {
-	return gulp.src('src/*.ts')
+	return gulp.src(['src/*.ts', 'src/convert.js'])
 		.pipe(sourcemaps.init())
 		.pipe(ts({
 			noImplicitAny: true,
 			module: 'commonjs',
 			moduleResolution: 'node',
-			target: 'ES5'
+			target: 'ES5',
+			allowJs: true
 		}))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('dist'));

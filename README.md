@@ -99,7 +99,7 @@ If you're already building your static resources with something like [gulp.js](h
 * Support extending classes
 * Add tests
 * Migrate comments
-* Provide better CLI interface
+* ~~Provide CLI interface~~
 * Make a gulp plugin
 * Setup CI
 * ~~Setup automated API docs~~

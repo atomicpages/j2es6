@@ -1,22 +1,18 @@
-let doc: string = `
-Usage:
-	convert - [options]
-	convert <src>... [options]
-	
-Arguments:
-	<src> Path to your $.Class files
-	
-Options:
-	-h, --help          Show help
-	--version           Show the current version
-	-v, --verbose       Enable verbose mode
-	-d, --dest=<dir>    Where to output generated files
-	--debug             Output debugging information
-`;
+const convert = require('../dist/convert');
 
+/**
+ * A simple CLI interface.
+ * @param argv {object}
+ */
+export function cli(argv: any) {
 
-export default function cli(argv = process.argv.slice(2)) {
+	let options: any = {
+		destination: argv.d,
+		verbose: !!argv.v,
+		debug: !!argv.debug
+	};
 
-	const VERSION: string = "1.0.0";
+	if (argv.ctor) options['ctor'] = argv.ctor;
 
+	convert(argv._, options);
 }

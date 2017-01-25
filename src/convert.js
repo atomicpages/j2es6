@@ -7,63 +7,72 @@ const traverse = require('ast-traverse');
 const Generator = require('../dist/generator').Generator;
 
 /**
- * Kicks off the conversion process.
- * @param files {string[]} The array of files to process.
- * @param options {object}
+ * Handles the file by starting the conversion process.
+ * @param file {string} The path to the file.
+ * @param {object} [info=path.parse(file)] Pass file information used to generate the output.
+ * @private
  */
-function convert (files, options) {
+function _handleFile(file, info, options) {
+	info = info || path.parse(file);
 
-	const defaultOptions = {
-		constructorName: 'init',
-		output: 'console',
-		destination: '.'
-	};
+	fs.readFile(file, function (err, content) {
+		let ast = acorn.parse(content.toString(), {
+			sourceType: 'script',
+			ranges: true
+			// onComment: function (block, text, start, end) {} // TODO: extract comments and add them to ES6
+		});
 
-	const OPTIONS = Object.assign({}, defaultOptions, options);
+		traverse(ast, {
+			pre: function (node, parent) {
+				if (node.type === 'MemberExpression') {
+					if (node.object
+						&& node.object.type === 'Identifier'
+						&& node.object.name === '$'
+						&& node.property
+						&& node.property.type === 'Identifier'
+						&& node.property.name === 'Class') {
+						let code = astring(Generator.build(parent.arguments, options));
 
-	'use strict';
+						if (options.destination === 'console') {
+							console.log(code);
+						} else {
+							fs.writeFile(options.destination + '/' + info.name + '.es6' + info.ext, code, {mode: 0o644}, err => {
+								if (err) {
+									throw new Error(err);
+								}
 
-	files.forEach(file => {
-		const info = path.parse(file);
-		const name = info.name + info.ext;
-
-		fs.readFile(file, (err, content) => {
-			let ast = acorn.parse(content.toString(), {
-				sourceType: 'script',
-				ranges: true
-				// onComment: function (block, text, start, end) {} // TODO: extract comments and add them to ES6
-			});
-
-			// console.log(content.toString() + '\n');
-
-			traverse(ast, {
-				pre: (node, parent, prop, idx) => {
-					if (node.type === 'MemberExpression') {
-						if (node.object
-							&& node.object.type === 'Identifier'
-							&& node.object.name === '$'
-							&& node.property
-							&& node.property.type === 'Identifier'
-							&& node.property.name === 'Class') {
-							let code = astring(Generator.build(parent.arguments, OPTIONS));
-
-							if (OPTIONS.output === 'console') {
-								console.log(code);
-							} else {
-								fs.writeFile(OPTIONS.destination + '/' + info.name + '.es6' + info.ext, code, {mode: 0o644}, err => {
-									if (err) {
-										throw new Error(JSON.stringify(err));
-									}
-
-									console.info('Wrote file ' + file);
-								});
-							}
+								console.info('Wrote file ' + file);
+							});
 						}
 					}
 				}
-			});
+			}
 		});
 	});
+}
+
+/**
+ * Kicks off the conversion process.
+ * @param files {string[]|string} The array of files to process.
+ * @param options {object}
+ */
+function convert(files, options) {
+
+	const defaultOptions = { constructorName: 'init' };
+
+	const opts = Object.assign({}, defaultOptions, options);
+
+	'use strict';
+
+	if (Array.isArray(files)) {
+		files.forEach(function (file) {
+			const info = path.parse(file);
+
+			_handleFile(file, info, opts);
+		});
+	} else if (typeof files === 'string') {
+		_handleFile(files, null, opts);
+	}
 
 }
 

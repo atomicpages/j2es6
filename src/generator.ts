@@ -7,13 +7,6 @@ import {InstanceMethodGenerator} from "./generators/InstanceMethodGenerator";
 
 export class Generator {
 
-	private options: Options;
-
-	public constructor(options: Options) {
-		this.options = Object.assign({}, options);
-		this.options.constructorName = this.options.constructorName || 'init';
-	}
-
 	/**
 	 * Builds the beginning of the AST.
 	 * @param parameters {Object[]} The namespace of <code>$.Class</code>

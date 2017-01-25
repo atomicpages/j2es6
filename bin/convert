@@ -7,16 +7,19 @@ const argv = require('yargs')
 	.command('<src>', 'Path of files to convert')
 	.example('$0 ~/Desktop/jquery.classes -d ~/Desktop/jquery.classes/es6')
 	.alias('v', 'verbose')
-	.version(() => VERSION)
 	.describe('v', 'Enable verbose mode')
 	.describe('debug', 'Enable debug mode')
 	.alias('d', 'dest')
 	.nargs('d', 1)
-	.describe('d', 'Where to store files after conversion')
+	.describe('d', 'Where to store files after conversion. Use "console" to dump data to the console. Use "stdout"' +
+' to write contents to process.stdout.')
+	.demandCommand(1, 'You must set the file path')
 	.demandOption(['d'])
+	.describe('ctor', 'The name of the constructor. Defaults to "init"')
 	.help('h')
 	.alias('h', 'help')
+	.version(() => VERSION)
 	.epilog('Copyright (c) 2017')
 	.argv;
 
-require('../dist/cli')(argv._);
+require('../dist/cli').cli(argv);
