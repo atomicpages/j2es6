@@ -17,7 +17,8 @@ export interface ClassExpression {
 export interface ClassLeftAssignment {
 	computed: boolean;
 	type: string;
-	object: ClassObject;
+	object?: ClassObject;
+	name?: string;
 	property?: ClassProperty;
 }
 

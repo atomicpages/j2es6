@@ -56,6 +56,13 @@ export class ClassGenerator {
 				type: "Identifier",
 				name: namespace.join('.')
 			};
+		} else {
+			delete ast.expression.left;
+			ast.expression.left = {
+				type: "Identifier",
+				name: root,
+				computed: false
+			};
 		}
 
 		return ast;
