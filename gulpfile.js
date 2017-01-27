@@ -2,7 +2,6 @@ const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const typedoc = require('gulp-typedoc');
 const sourcemaps = require('gulp-sourcemaps');
-const watch = require('gulp-watch');
 const concat = require('gulp-concat');
 const del = require('del');
 
@@ -49,6 +48,10 @@ gulp.task('doc', function () {
 			ignoreCompilerErrors: true,
 			version: true
 		}));
+});
+
+gulp.task('watch:scripts', function () {
+	return gulp.watch('src/generators/*.ts', ['generators']);
 });
 
 gulp.task('default', ['scripts', 'doc']);

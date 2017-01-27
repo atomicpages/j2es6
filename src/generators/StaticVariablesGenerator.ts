@@ -1,4 +1,4 @@
-export class StaticVariablesGenerator  {
+export class StaticVariablesGenerator {
 
 	public static build(variables: Object[], root: Object[], namespace: string): void {
 		let spaces: string[] = namespace.split('.');
@@ -21,6 +21,7 @@ export class StaticVariablesGenerator  {
 							},
 							property: {
 								type: "Identifier",
+								// Tsk, tsk, nested ternary operators!
 								name: spaces.length > 1 ? spaces.join('.') : spaces[0]
 							},
 							computed: false
@@ -33,6 +34,14 @@ export class StaticVariablesGenerator  {
 					}
 				},
 			};
+
+			if (spaces.length === 0) {
+				delete branch.expression.left.object.object;
+				delete branch.expression.left.object.property;
+
+				branch.expression.left.object.type = "Identifier";
+				branch.expression.left.object.name = rootNS;
+			}
 
 			if (v.value.type !== "Literal") {
 				branch.expression.right = v.value;
