@@ -7,6 +7,62 @@ const glob = require('glob');
 
 const Generator = require('../dist/generator').Generator;
 
+let calleeNamespace = [];
+
+/**
+ *
+ * @param node {object} The node to test.
+ * @returns {boolean}
+ * @private
+ */
+function _isjQueryClass(node) {
+	return node.object
+		&& node.object.type === 'Identifier'
+		&& node.object.name === '$'
+		&& node.property
+		&& node.property.type === 'Identifier'
+		&& node.property.name === 'Class';
+}
+
+function _isjQueryClassExtension(node) {
+	const ns_test = /([a-zA-Z0-9]\w*\.)+\w*[a-zA-Z0-9]$/;
+
+	let boolean = node.callee
+		&& node.arguments
+		&& node.arguments.length > 0
+		&& node.arguments[0].type === 'Literal'
+		&& ns_test.test(node.arguments[0].value)
+		&& node.callee.type === 'MemberExpression'
+		&& node.callee.object
+		&& node.callee.property.type === 'Identifier'
+		&& node.callee.property.name === 'extend';
+
+	if (boolean) {
+		_buildCalleeExpression(node.callee.object, calleeNamespace);
+		calleeNamespace.reverse().push('extend');
+	} else {
+		return false;
+	}
+
+	return boolean && ns_test.test(calleeNamespace.join('.'));
+}
+
+function _buildCalleeExpression(callee, target) {
+	if (!callee.hasOwnProperty('object')) {
+		if (callee.name) {
+			target.push(callee.name);
+		}
+
+		return;
+	}
+
+	if (callee && callee.property && callee.property.name) {
+		target.push(callee.property.name);
+
+		_buildCalleeExpression(callee.object, target);
+	}
+}
+
 /**
  * Handles the file by starting the conversion process.
  * @param file {string} The path to the file.
@@ -26,12 +82,7 @@ function _handleFile(file, info, options) {
 		traverse(ast, {
 			pre: function (node, parent) {
 				if (node.type === 'MemberExpression') {
-					if (node.object
-						&& node.object.type === 'Identifier'
-						&& node.object.name === '$'
-						&& node.property
-						&& node.property.type === 'Identifier'
-						&& node.property.name === 'Class') {
+					if (_isjQueryClass(node)) {
 						let code = astring(Generator.build(parent.arguments, options));
 
 						if (options.destination === 'console') {
@@ -42,10 +93,14 @@ function _handleFile(file, info, options) {
 									throw new Error(err);
 								}
 
-								console.info('Wrote file ' + file);
+								if (options.debug || options.verbose) {
+									console.info('Wrote file ' + file);
+								}
 							});
 						}
 					}
+				} else if (node.type === 'CallExpression' && _isjQueryClassExtension(node)) {
+					console.log(calleeNamespace.join('.'));
 				}
 			}
 		});

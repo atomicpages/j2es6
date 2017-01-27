@@ -21,7 +21,6 @@ export class StaticVariablesGenerator {
 							},
 							property: {
 								type: "Identifier",
-								// Tsk, tsk, nested ternary operators!
 								name: spaces.length > 1 ? spaces.join('.') : spaces[0]
 							},
 							computed: false
