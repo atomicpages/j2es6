@@ -50,8 +50,14 @@ gulp.task('doc', function () {
 		}));
 });
 
-gulp.task('watch:scripts', function () {
+gulp.task('watch:generators', function () {
 	return gulp.watch('src/generators/*.ts', ['generators']);
 });
+
+gulp.task('watch:scripts', function () {
+	return gulp.watch(['src/*.ts', 'src/convert.js'], ['scripts']);
+});
+
+gulp.task('watch', ['watch:scripts', 'watch:generators']);
 
 gulp.task('default', ['scripts', 'doc']);

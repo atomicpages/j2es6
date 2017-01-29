@@ -1,11 +1,18 @@
-import {Options} from "./typings/options";
-import {ClassGenerator} from "./generators/ClassGenerator";
-import {StaticMethodGenerator} from "./generators/StaticMethodGenerator";
-import {StaticVariablesGenerator} from "./generators/StaticVariablesGenerator";
-import {ClassDefinition} from "./typings/ClassDefinition";
-import {InstanceMethodGenerator} from "./generators/InstanceMethodGenerator";
+import {Options} from "../typings/options";
+import {ClassGenerator} from "./ClassGenerator";
+import {StaticMethodGenerator} from "./StaticMethodGenerator";
+import {StaticVariablesGenerator} from "./StaticVariablesGenerator";
+import {ClassDefinition} from "../typings/ClassDefinition";
+import {InstanceMethodGenerator} from "./InstanceMethodGenerator";
+import {ExtendedClassGenerator} from "./ExtendedClassGenerator";
 
-export class Generator {
+/**
+ * Handles the top-level generation of the AST by declaring the program and delegating
+ * other classes to build the remainder of the AST.
+ * @since 1.0.0
+ * @class
+ */
+export class ProgramGenerator {
 
 	/**
 	 * Builds the beginning of the AST.
@@ -69,11 +76,27 @@ export class Generator {
 		};
 
 		if (spaces.length > 1) {
-			Generator._createConstReference(ast.body, spaces[0]);
-			Generator._handleChainedSpaces(ast.body, spaces);
+			ProgramGenerator._createConstReference(ast.body, spaces[0]);
+			ProgramGenerator._handleChainedSpaces(ast.body, spaces);
 		}
 
 		let classDefinition: ClassDefinition = ClassGenerator.build(spaces);
+
+		if (options.extended) {
+			if (!options.extendedNamespace) {
+				console.warn('Missing namespace for extended class!');
+			} else {
+				let constant = ast.body[ast.body.length - 1];
+
+				// Don't redeclare constant if namespaces match
+				if (constant.expression.left.object.name !== options.extendedNamespace[0]) {
+					ProgramGenerator._createConstReference(ast.body, options.extendedNamespace[0]);
+				}
+			}
+
+			ExtendedClassGenerator.build(classDefinition, options.extendedNamespace, spaces);
+		}
+
 		let classBodyReference: Object[] = classDefinition.expression.right.body.body;
 
 		ast.body.push(classDefinition);

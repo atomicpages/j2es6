@@ -5,7 +5,7 @@ const astring = require('astring');
 const traverse = require('ast-traverse');
 const glob = require('glob');
 
-const Generator = require('../dist/generator').Generator;
+const ProgramGenerator = require('../dist/generators/ProgramGenerator').ProgramGenerator;
 
 let calleeNamespace = [];
 
@@ -24,6 +24,11 @@ function _isjQueryClass(node) {
 		&& node.property.name === 'Class';
 }
 
+/**
+ * @param node {object} The node to inspect.
+ * @returns {boolean} True if the jQuery class is extending another jQuery class.
+ * @private
+ */
 function _isjQueryClassExtension(node) {
 	const ns_test = /([a-zA-Z0-9]\w*\.)+\w*[a-zA-Z0-9]$/;
 
@@ -39,7 +44,7 @@ function _isjQueryClassExtension(node) {
 
 	if (boolean) {
 		_buildCalleeExpression(node.callee.object, calleeNamespace);
-		calleeNamespace.reverse().push('extend');
+		calleeNamespace.reverse();
 	} else {
 		return false;
 	}
@@ -47,6 +52,12 @@ function _isjQueryClassExtension(node) {
 	return boolean && ns_test.test(calleeNamespace.join('.'));
 }
 
+/**
+ * Recursively walks down the AST to build the extended classes' namespace.
+ * @param callee {object} The callee object in the AST.
+ * @param target {string[]} The array to push the namespace to.
+ * @private
+ */
 function _buildCalleeExpression(callee, target) {
 	if (!callee.hasOwnProperty('object')) {
 		if (callee.name) {
@@ -64,43 +75,59 @@ function _buildCalleeExpression(callee, target) {
 }
 
 /**
+ * Handles the destination output.
+ * @param options {object} The options to pass into the generator sequence.
+ * @param code {object} The generated code as a raw AST.
+ * @param info {object} File info.
+ * @private
+ */
+function _destination(options, code, info) {
+	if (options.destination === 'console') {
+		console.log(code);
+	} else {
+		fs.writeFile(options.destination + '/' + info.name + '.es6' + info.ext, code, {mode: 0o644}, function (err) {
+			if (err) {
+				throw new Error(err);
+			}
+
+			if (options.debug || options.verbose) {
+				console.info('Wrote file ' + file);
+			}
+		});
+	}
+}
+
+/**
  * Handles the file by starting the conversion process.
  * @param file {string} The path to the file.
+ * @param options {object}
  * @param {object} [info=path.parse(file)] Pass file information used to generate the output.
  * @private
  */
-function _handleFile(file, info, options) {
+function _handleFile(file, options, info) {
 	info = info || path.parse(file);
 
 	fs.readFile(file, function (err, content) {
 		let ast = acorn.parse(content.toString(), {
 			sourceType: 'script',
 			ranges: true
-			// onComment: function (block, text, start, end) {} // TODO: extract comments and add them to ES6
+			// onComment: function (block, text, start, end) {} // TODO: extract comments and add to generated code
 		});
 
 		traverse(ast, {
 			pre: function (node, parent) {
 				if (node.type === 'MemberExpression') {
 					if (_isjQueryClass(node)) {
-						let code = astring(Generator.build(parent.arguments, options));
-
-						if (options.destination === 'console') {
-							console.log(code);
-						} else {
-							fs.writeFile(options.destination + '/' + info.name + '.es6' + info.ext, code, {mode: 0o644}, err => {
-								if (err) {
-									throw new Error(err);
-								}
-
-								if (options.debug || options.verbose) {
-									console.info('Wrote file ' + file);
-								}
-							});
-						}
+						let code = astring(ProgramGenerator.build(parent.arguments, options));
+						_destination(options, code, info);
 					}
 				} else if (node.type === 'CallExpression' && _isjQueryClassExtension(node)) {
-					console.log(calleeNamespace.join('.'));
+					options.extended = true;
+					options.extendedNamespace = calleeNamespace;
+
+					let code = astring(ProgramGenerator.build(parent.expression.arguments, options));
+
+					_destination(options, code, info);
 				}
 			}
 		});
@@ -128,10 +155,10 @@ function convert(files, options) {
 		files.forEach(function (file) {
 			const info = path.parse(file);
 
-			_handleFile(file, info, opts);
+			_handleFile(file, opts, info);
 		});
 	} else if (typeof files === 'string') {
-		_handleFile(files, null, opts);
+		_handleFile(files, opts, null);
 	}
 
 }

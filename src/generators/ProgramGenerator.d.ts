@@ -1,10 +1,6 @@
-import { Options } from "./typings/options";
+import { Options } from "../typings/options";
 
 export declare class Generator {
-
-    private options;
-
-    constructor(options: Options);
 
     /**
      * Builds the beginning of the AST.

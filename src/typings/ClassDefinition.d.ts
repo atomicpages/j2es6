@@ -1,6 +1,7 @@
 /**
  * Outlines the class definition of a JSTree-compliant AST.
- * Not necessary, but it prevents from semantic errors during compilation.
+ * Not necessary, but it prevents semantic errors during compilation.
+ * @since 1.0.0
  */
 export interface ClassDefinition {
 	type: string;
@@ -12,6 +13,14 @@ export interface ClassExpression {
 	right: ClassRightAssignment;
 	operator: string;
 	type: string;
+	superClass?: SuperClass;
+}
+
+export interface SuperClass {
+	type: string;
+	object: ClassLeftAssignment | ClassObject;
+	property: ClassProperty;
+	computed: boolean;
 }
 
 export interface ClassLeftAssignment {

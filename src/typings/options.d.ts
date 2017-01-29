@@ -20,4 +20,14 @@ export interface Options {
 	 */
 	destination?: string;
 
+	/**
+	 * Set true to indicate the class is extending some other class.
+	 */
+	extended?: boolean;
+
+	/**
+	 * Required IFF extended is set true.
+	 */
+	extendedNamespace?: string[];
+
 }
