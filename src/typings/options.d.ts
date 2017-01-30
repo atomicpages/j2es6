@@ -30,4 +30,14 @@ export interface Options {
 	 */
 	extendedNamespace?: string[];
 
+	/**
+	 * A list of files to ignore.
+	 */
+	ignore?: string[];
+
+	/**
+	 * A pattern to ignore.
+	 */
+	ignorePattern?: RegExp | string;
+
 }

@@ -9,17 +9,27 @@ const argv = require('yargs')
 	.alias('v', 'verbose')
 	.describe('v', 'Enable verbose mode')
 	.describe('debug', 'Enable debug mode')
+	.boolean('debug')
+	.boolean('verbose')
 	.alias('d', 'dest')
 	.nargs('d', 1)
 	.describe('d', 'Where to store files after conversion. Use "console" to dump data to the console. Use "stdout"' +
 ' to write contents to process.stdout.')
 	.demandCommand(1, 'You must set the file path')
 	.demandOption(['d'])
-	.describe('ctor', 'The name of the constructor. Defaults to "init"')
+	.describe('ctor', 'The name of the constructor')
+	.default('ctor', 'init')
+	.describe('i', 'Ignores a specific set of files specified')
+	.alias('i', 'ignore')
+	.array('ignore')
+	.describe('ignore-pattern', 'Same as ignore, but with a ECMA-262-compliant RegExp pattern')
+	.coerce('ignore-pattern', function (arg) {
+		return new RegExp(arg);
+	})
 	.help('h')
 	.alias('h', 'help')
 	.version(() => VERSION)
-	.epilog('Copyright (c) 2017')
+	.epilog('Copyright (c) ' + new Date().getFullYear())
 	.argv;
 
 require('../dist/cli').cli(argv);

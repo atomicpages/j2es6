@@ -42,3 +42,4 @@ dist/
 demo.*
 docs/
 typings/
+test/res/es6/

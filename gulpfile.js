@@ -4,6 +4,7 @@ const typedoc = require('gulp-typedoc');
 const sourcemaps = require('gulp-sourcemaps');
 const concat = require('gulp-concat');
 const del = require('del');
+const convert = require('./index');
 
 gulp.task('clean', function () {
 	del('docs');
@@ -35,6 +36,16 @@ gulp.task('generators', function () {
 		}))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest('dist/generators'));
+});
+
+gulp.task('convert', function () {
+	return gulp.src('test/res/*.js')
+		.pipe(convert({
+			verbose: true,
+			debug: true,
+			ctor: 'init'
+		}))
+		.pipe(gulp.dest('test/res/es6'))
 });
 
 gulp.task('doc', function () {

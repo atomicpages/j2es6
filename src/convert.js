@@ -4,13 +4,17 @@ const acorn = require('acorn');
 const astring = require('astring');
 const traverse = require('ast-traverse');
 const glob = require('glob');
+const gutils = require('gulp-util');
+const PluginError = gutils.PluginError;
+const through = require('through2');
+
+const PLUGIN_NAME = 'jquery-class-to-es6';
 
 const ProgramGenerator = require('../dist/generators/ProgramGenerator').ProgramGenerator;
 
 let calleeNamespace = [];
 
 /**
- *
  * @param node {object} The node to test.
  * @returns {boolean}
  * @private
@@ -99,16 +103,20 @@ function _destination(options, code, info) {
 
 /**
  * Handles the file by starting the conversion process.
- * @param file {string} The path to the file.
+ * @param file {string|Buffer} The path to the file.
  * @param options {object}
  * @param {object} [info=path.parse(file)] Pass file information used to generate the output.
+ * @param [stream=false] {boolean}
  * @private
  */
-function _handleFile(file, options, info) {
+function _handleFile(file, options, info, stream) {
 	info = info || path.parse(file);
 
-	fs.readFile(file, function (err, content) {
-		let ast = acorn.parse(content.toString(), {
+	let _parse = function (content, options, info, stream) {
+		let code = '';
+		let hit = false;
+
+		let ast = acorn.parse(content, {
 			sourceType: 'script',
 			ranges: true
 			// onComment: function (block, text, start, end) {} // TODO: extract comments and add to generated code
@@ -116,23 +124,45 @@ function _handleFile(file, options, info) {
 
 		traverse(ast, {
 			pre: function (node, parent) {
+				if (hit) return; // TODO: benchmark this
+
 				if (node.type === 'MemberExpression') {
 					if (_isjQueryClass(node)) {
-						let code = astring(ProgramGenerator.build(parent.arguments, options));
-						_destination(options, code, info);
+						code = astring(ProgramGenerator.build(parent.arguments, options));
+						hit = true;
+
+						if (!stream) {
+							_destination(options, code, info);
+						}
 					}
 				} else if (node.type === 'CallExpression' && _isjQueryClassExtension(node)) {
 					options.extended = true;
 					options.extendedNamespace = calleeNamespace;
+					hit = true;
 
-					let code = astring(ProgramGenerator.build(parent.expression.arguments, options));
+					code = astring(ProgramGenerator.build(parent.expression.arguments, options));
 
-					_destination(options, code, info);
+					if (!stream) {
+						_destination(options, code, info);
+					}
 				}
 			}
 		});
-	});
+
+		return code;
+	};
+
+	if (stream) {
+		return _parse(file, options, info, stream);
+	} else {
+		fs.readFile(file, 'utf-8', function (err, content) {
+			if (err) throw new Error(err);
+
+			_parse(content, options, info, stream);
+		});
+	}
 }
+
 
 /**
  * Kicks off the conversion process.
@@ -145,9 +175,7 @@ function convert(files, options) {
 
 	const opts = Object.assign({}, defaultOptions, options);
 
-	'use strict';
-
-	if (Array.isArray(files)) {
+	if (Array.isArray(files) && files.length > 0) {
 		if (files.length === 1) {
 			files = glob.sync(path.normalize(files[0]));
 		}
@@ -157,8 +185,25 @@ function convert(files, options) {
 
 			_handleFile(file, opts, info);
 		});
-	} else if (typeof files === 'string') {
-		_handleFile(files, opts, null);
+	} else {
+		return through.obj(function (file, encoding, callback) {
+			if (file.isNull()) {
+				callback(null, file);
+			}
+
+			if (file.isStream()) {
+				this.emit(new PluginError(PLUGIN_NAME, 'Streams are not supported.'));
+			}
+
+			if (Buffer.isBuffer(file.contents)) {
+				let code = _handleFile(file.contents.toString(), opts, null, true);
+
+				file.contents = new Buffer(code);
+				callback(null, file);
+			} else {
+				this.emit(new PluginError(PLUGIN_NAME, 'File contents must be a buffer!'));
+			}
+		});
 	}
 
 }

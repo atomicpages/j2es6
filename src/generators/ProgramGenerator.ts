@@ -94,7 +94,7 @@ export class ProgramGenerator {
 				}
 			}
 
-			ExtendedClassGenerator.build(classDefinition, options.extendedNamespace, spaces);
+			ExtendedClassGenerator.build(classDefinition, options.extendedNamespace);
 		}
 
 		let classBodyReference: Object[] = classDefinition.expression.right.body.body;
