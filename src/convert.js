@@ -198,7 +198,10 @@ function convert(files, options) {
 			if (Buffer.isBuffer(file.contents)) {
 				let code = _handleFile(file.contents.toString(), opts, null, true);
 
-				file.contents = new Buffer(code);
+				if (code) {
+					file.contents = new Buffer(code);
+				}
+
 				callback(null, file);
 			} else {
 				this.emit(new PluginError(PLUGIN_NAME, 'File contents must be a buffer!'));
