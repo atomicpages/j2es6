@@ -16,27 +16,27 @@ $.Class('foo.bar', {});
 $.Class('foo.namespace.demo', {
 	STATIC_VAR: 20,
 	_instance: undefined,
-	
+
 	instance: function () {
 		if(!foo.namespace.subspace._instance) {
 			foo.namespace.subspace._instance = new foo.namespace.subspace();
 		}
-		
+
 		return foo.namespace.subspace._instance;
 	}
 }, {
 	/**
 	 * Initializes the class.
-	 * @constructor 
+	 * @constructor
 	 */
 	init: function () {
 		this._special = 20;
 		this._someting = 40;
 	},
-	
+
 	/**
 	 * Converts the singleton to a string.
-	 * @return {string} 
+	 * @return {string}
 	 */
 	toString: function () {
 		return JSON.stringify(this);
@@ -52,24 +52,24 @@ const foo = window.foo;
 foo.namespace = foo.namespace || {};
 
 foo.namespace.demo = class Demo {
-	
+
 	static instance() {
 		if (!foo.namespace.demo._instance) {
 			foo.namespace.demo._instance = new Demo();
 		}
-		
+
 		return foo.namespace.demo._instance;
 	}
-	
+
 	constructor() {
 		this._special = 20;
 		this._something = 40;
 	}
-	
+
 	toString() {
 		return JSON.stringify(this);
 	}
-	
+
 };
 
 foo.namespace.demo.STATIC_VAR = 20;
@@ -116,17 +116,17 @@ gulp.task('convert', function () {
 
 ### Options
 ~~~
- -v, --verbose     Enable verbose mode                                
-  --debug           Enable debug mode                                  
+ -v, --verbose     Enable verbose mode
+  --debug           Enable debug mode
   -d, --dest        Where to store files after conversion. Use "console" to dump
                     data to the console. Use "stdout" to write contents to
                     process.stdout.                                   [required]
   --ctor            The name of the constructor                [default: "init"]
   -i, --ignore      Ignores a specific set of files specified            [array]
   --ignore-pattern  Same as ignore, but with a ECMA-262-compliant RegExp pattern
-  -h, --help        Show help                                          
-  --version         Show version number                                
-~~~ 
+  -h, --help        Show help
+  --version         Show version number
+~~~
 
 ### Limitations
 1. This utility, at least at this time, does **not** account for reserved words in the `$.Class` name definition. This will break your code:
@@ -134,15 +134,15 @@ gulp.task('convert', function () {
 	~~~javascript
 	$.Class('this.demo.Utils', { ... }, { ... });
 	~~~
-	
+
 	In order for this to translate properly into a namespace we would need to do this during code generation:
-	 
+
 	~~~javascript
 	window['this'] = window['this'] || {};
 	const <insert_transformed_name_here> = window['this'];
 	...
 	~~~
-	
+
 	This gets messy very quickly.
 2. Comments are not migrated at the moment. This is something that I'll be working on soon.
 3. Files that contains a mix of `$.Class` definitions and other non-`$.Class` definitions won't generate properly. See this example:
@@ -150,14 +150,14 @@ gulp.task('convert', function () {
 	~~~javascript
 	$.Class('foo.bar', {
 		init: function () {
-			console.log('Some fancy stuff');		
+			console.log('Some fancy stuff');
 		},
-	
+
 		demo: function () {
 			let _demo = function () { // will get generated
 				console.log('foo');
 			};
-		
+
 			_demo();
 		}
 	});
@@ -167,7 +167,7 @@ gulp.task('convert', function () {
 		console.log('Hello');
 	};
 	~~~
-	
+
 	I do not have plans to implement support for this use case unless there is a need for it.
 
 ### How do I support legacy clients with my fancy ES2015 classes?
@@ -188,3 +188,5 @@ If you're already building your static resources with something like [gulp.js](h
 * Setup CI
 * ~~Setup automated API docs~~
 * Add tests and linting as part of the acceptance for a successful build on CI
+* ~~Support instance methods~~
+* Provide a means to format sourcecode (or at least a workaround)

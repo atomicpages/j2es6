@@ -1,10 +1,11 @@
-import {Options} from "../typings/options";
-import {ClassGenerator} from "./ClassGenerator";
-import {StaticMethodGenerator} from "./StaticMethodGenerator";
-import {StaticVariablesGenerator} from "./StaticVariablesGenerator";
-import {ClassDefinition} from "../typings/ClassDefinition";
-import {InstanceMethodGenerator} from "./InstanceMethodGenerator";
-import {ExtendedClassGenerator} from "./ExtendedClassGenerator";
+import { Options } from "../typings/options";
+import { ClassGenerator } from "./ClassGenerator";
+import { StaticMethodGenerator } from "./StaticMethodGenerator";
+import { StaticVariablesGenerator } from "./StaticVariablesGenerator";
+import { ClassDefinition } from "../typings/ClassDefinition";
+import { InstanceMethodGenerator } from "./InstanceMethodGenerator";
+import { ExtendedClassGenerator } from "./ExtendedClassGenerator";
+import { InstanceVariablesGenerator } from "./InstanceVariablesGenerator";
 
 /**
  * Handles the top-level generation of the AST by declaring the program and delegating
@@ -89,7 +90,7 @@ export class ProgramGenerator {
 				let constant = ast.body[ast.body.length - 1];
 
 				// Don't redeclare constant if namespaces match
-				if (constant.expression.left.object.name !== options.extendedNamespace[0]) {
+				if (!constant.expression || !constant.expression.left || !constant.expression.left.object || (constant.expression.left.object.name !== options.extendedNamespace[0])) {
 					ProgramGenerator._createConstReference(ast.body, options.extendedNamespace[0]);
 				}
 			}
@@ -103,7 +104,11 @@ export class ProgramGenerator {
 
 		if (parameters.length === 3) {
 			let vars: Object[] = StaticMethodGenerator.build(parameters[1], classBodyReference, spaces);
-			StaticVariablesGenerator.build(vars, ast.body, namespace);
+
+			if (vars && vars.length > 0) {
+				StaticVariablesGenerator.build(vars, ast.body, namespace);
+			}
+
 			InstanceMethodGenerator.build(parameters[2], classBodyReference, options);
 		} else { // no static methods declared
 			InstanceMethodGenerator.build(parameters[1], classBodyReference, options);
