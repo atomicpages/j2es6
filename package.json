@@ -1,23 +1,14 @@
 {
-	"name": "jquery-class-to-es6",
+	"name": "j2es6",
 	"version": "1.0.0",
-	"description": "Converts jQuery $.Class to es2015 classes",
+	"description": "Converts jQuery MX $.Class to ES2015 classes",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/atomicpages/jquery-class-to-es6.git"
+		"url": "git+https://github.com/atomicpages/j2es6.git"
 	},
 	"author": "Dennis Thompson",
 	"license": "MIT",
-	"dependencies": {
-		"acorn": "^4.0.4",
-		"ast-traverse": "^0.1.1",
-		"astring": "^0.8.0",
-		"glob": "^7.1.1",
-		"gulp-util": "^3.0.8",
-		"through2": "^2.0.3",
-		"yargs": "^6.6.0"
-	},
 	"scripts": {
 		"test": "mocha"
 	},
@@ -26,6 +17,15 @@
 	},
 	"bin": {
 		"j2es6": "bin/j2es6"
+	},
+	"dependencies": {
+		"acorn": "^4.0.4",
+		"ast-traverse": "^0.1.1",
+		"astring": "^0.8.0",
+		"glob": "^7.1.1",
+		"gulp-util": "^3.0.8",
+		"through2": "^2.0.3",
+		"yargs": "^6.6.0"
 	},
 	"devDependencies": {
 		"chai": "^3.5.0",
