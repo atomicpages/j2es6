@@ -1,35 +1,50 @@
 #!/usr/bin/env node
 
-const VERSION = '1.0.0';
+/*eslint dot-location: ["error", "property"]*/
+const VERSION = require('../package.json').version;
 
 const argv = require('yargs')
-	.usage('Usage: $0 <src> [options]')
-	.command('<src>', 'Path of files to convert')
-	.example('$0 ~/Desktop/jquery.classes -d ~/Desktop/jquery.classes/es6')
-	.alias('v', 'verbose')
-	.describe('v', 'Enable verbose mode')
-	.describe('debug', 'Enable debug mode')
-	.boolean('debug')
-	.boolean('verbose')
-	.alias('d', 'dest')
-	.nargs('d', 1)
-	.describe('d', 'Where to store files after conversion. Use "console" to dump data to the console. Use "stdout"' +
-' to write contents to process.stdout.')
-	.demandCommand(1, 'You must set the file path')
-	.demandOption(['d'])
-	.describe('ctor', 'The name of the constructor')
-	.default('ctor', 'init')
-	.describe('i', 'Ignores a specific set of files specified')
-	.alias('i', 'ignore')
-	.array('ignore')
-	.describe('ignore-pattern', 'Same as ignore, but with a ECMA-262-compliant RegExp pattern')
-	.coerce('ignore-pattern', function (arg) {
-		return new RegExp(arg);
-	})
-	.help('h')
-	.alias('h', 'help')
-	.version(() => VERSION)
-	.epilog('Copyright (c) ' + new Date().getFullYear())
-	.argv;
+    .usage('Usage: $0 <src> [options]')
+    .command('<src>', 'Path of files to convert')
+    .demandCommand(1, 'You must set the file path before running script!')
+    .example('$0 ~/Desktop/jquery.classes -d ~/Desktop/jquery.classes/es6')
+    .option('v', {
+        alias: 'verbose',
+        describe: 'Enable verbose mode',
+        boolean: true
+    })
+    .option('debug', {
+        describe: 'Enable debug mode',
+        boolean: true
+    })
+    .options('dest', {
+        alias: 'd',
+        nargs: 1,
+        describe: 'Where to store files after conversion. Use "console" to dump data to the console. Use "stdout"  to write contents to process.stdout.',
+        demandOption: true
+    })
+    // .option('target', {
+    // 	describe: 'The ECMAScript version you wish to generate',
+    // 	choices: ['es2015', 'es2017'],
+    // 	default: 'es2015'
+    // })
+    .option('ctor', {
+        describe: 'The name of the constructor',
+        default: 'init'
+    })
+    .option('i', {
+        alias: 'ignore',
+        describe: 'Ignores a specific set of files specified',
+        array: true
+    })
+    .describe('ignore-pattern', 'Same as ignore, but with a ECMA-262-compliant RegExp pattern')
+    .coerce('ignore-pattern', function (arg) {
+        return new RegExp(arg);
+    })
+    .help('h')
+    .alias('h', 'help')
+    .version(() => VERSION)
+    .epilog('Copyright (c) ' + new Date().getFullYear())
+    .argv;
 
 require('../dist/cli').cli(argv);

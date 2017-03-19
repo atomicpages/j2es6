@@ -1,8 +1,6 @@
-import { Options } from "../typings/options";
+import { Options } from '../typings/options';
 
 export declare class InstanceMethodGenerator {
-
-    private static _ctorGenerated;
 
     /**
      *
@@ -10,7 +8,9 @@ export declare class InstanceMethodGenerator {
      * @param root
      * @param options {Options} The name of the constructor.
      */
-    static build(ast: any, root: Object[], options: Options): void;
+    // tslint:disable-next-line:no-unused-variable
+    public static build(ast: any, root: Object[], options: Options): void;
 
+    // tslint:disable-next-line:no-unused-variable
     private static _buildConstructor(property);
 }

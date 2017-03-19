@@ -1,4 +1,4 @@
-import { Options } from "../typings/options";
+import { Options } from '../typings/options';
 
 export declare class Generator {
 
@@ -8,7 +8,7 @@ export declare class Generator {
      * @param options {Options} The options passed by the consumer.
      * @returns {object} A ES2015 JSTree-compatible object that can be used for code generation.
      */
-    static build(parameters: any[], options: Options): Object;
+    public static build(parameters: any[], options: Options): Object;
 
     /**
      * Builds AST objects for chained namespaces stemming from the root namespace.
@@ -21,6 +21,7 @@ export declare class Generator {
      * @param spaces {string[]} The namespace chain as an array including the root namespace.
      * @private
      */
+    // tslint:disable-next-line:no-unused-variable
     private static _handleChainedSpaces(body, spaces);
 
     /**
@@ -29,5 +30,6 @@ export declare class Generator {
      * @param space {string} The root namespace object after <code>window</code> (e.g. window.foo)
      * @private
      */
+    // tslint:disable-next-line:no-unused-variable
     private static _createConstReference(body, space);
 }

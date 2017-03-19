@@ -1,3 +1,4 @@
+/* tslint:disable:no-require-imports only-arrow-functions*/
 const convert = require('./convert');
 
 /**
@@ -6,15 +7,17 @@ const convert = require('./convert');
  */
 export function cli(argv: any) {
 
-	let options: any = {
-		destination: argv.d,
-		verbose: !!argv.v,
-		debug: !!argv.debug,
-		ignore: argv.ignore,
-		"ignore-pattern": argv["ignore-pattern"]
-	};
+    const options: any = {
+        destination: argv.d,
+        verbose: !!argv.v,
+        debug: !!argv.debug,
+        ignore: argv.ignore,
+        'ignore-pattern': argv['ignore-pattern']
+    };
 
-	if (argv.ctor) options['ctor'] = argv.ctor;
+    if (argv.ctor) {
+        options['ctor'] = argv.ctor;
+    }
 
-	convert(argv._, options);
+    convert(argv._, options);
 }
