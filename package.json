@@ -10,11 +10,15 @@
 	"author": "Dennis Thompson",
 	"license": "MIT",
 	"scripts": {
-		"test": "mocha",
-        "prepublish": "gulp eslint && gulp tslint"
+		"test": "jest",
+		"prepublish": "gulp eslint && gulp tslint"
 	},
-	"engines": { "node": ">=4.0.0" },
-	"bin": { "j2es6": "bin/j2es6" },
+	"engines": {
+		"node": ">=6.0.0"
+	},
+	"bin": {
+		"j2es6": "bin/j2es6"
+	},
 	"dependencies": {
 		"acorn": "^4.0.4",
 		"ast-traverse": "^0.1.1",
@@ -25,7 +29,7 @@
 		"yargs": "^7.0.0"
 	},
 	"devDependencies": {
-		"chai": "^3.5.0",
+		"@types/jest": "^19.2.2",
 		"del": "^2.2.2",
 		"eslint": "^3.18.0",
 		"gulp": "^3.9.1",
@@ -35,11 +39,21 @@
 		"gulp-tslint": "^7.1.0",
 		"gulp-typedoc": "^2.0.2",
 		"gulp-typescript": "^3.1.4",
-		"karma": "^1.4.0",
+		"jest": "^19.0.2",
+		"jest-cli": "^19.0.2",
 		"merge2": "^1.0.3",
-		"mocha": "^3.2.0",
+		"ts-jest": "^19.0.2",
 		"tslint": "^4.5.1",
 		"typedoc": "^0.5.5",
 		"typescript": "^2.1.5"
-	}
+	},
+    "jest": {
+        "testEnvironment": "node",
+        "transform": {
+            ".(ts|tsx)": "./node_modules/ts-jest/preprocessor.js"
+        },
+        "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+        "moduleFileExtensions": ["ts", "tsx", "js"],
+        "testResultsProcessor": "./node_modules/ts-jest/coverageprocessor.js"
+    }
 }

@@ -123,7 +123,7 @@ function _handleFile (file, options, info, stream) {
         });
 
         traverse(ast, {
-            pre: function (node, parent) {
+            pre: (node, parent) => {
                 if (hit) {
                     return; // TODO: benchmark this
                 }
@@ -158,7 +158,7 @@ function _handleFile (file, options, info, stream) {
         return _parse(file, options, info, stream);
     }
 
-    fs.readFile(file, 'utf-8', function (err, content) {
+    fs.readFile(file, 'utf-8', (err, content) => {
         if (err) {
             throw new Error(err);
         }
@@ -182,13 +182,13 @@ function convert (files, options) {
             files = glob.sync(path.normalize(files[0]));
         }
 
-        files.forEach(function (file) {
+        files.forEach(file => {
             const info = path.parse(file);
 
             _handleFile(file, opts, info);
         });
     } else {
-        return through.obj(function (file, encoding, callback) {
+        return through.obj((file, encoding, callback) => {
             if (file.isNull()) {
                 callback(null, file);
             }
