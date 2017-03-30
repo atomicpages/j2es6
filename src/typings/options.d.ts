@@ -11,11 +11,6 @@ export interface Options {
     constructorName?: string;
 
     /**
-     * Where to place the output. Expecting console or file.
-     */
-    output?: string;
-
-    /**
      * The location where to output the generated files.
      */
     destination?: string;
@@ -39,5 +34,15 @@ export interface Options {
      * A pattern to ignore.
      */
     ignorePattern?: RegExp | string;
+
+    /**
+     * Where to place the output. Expecting console or file.
+     */
+    output?: string;
+
+    /**
+     * The target version of ECMAScript to produce. Defaults to <code>es2015</code>.
+     */
+    target: string;
 
 }

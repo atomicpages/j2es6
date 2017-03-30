@@ -1,32 +1,34 @@
+import { Types } from '../defs/Types';
+
 export class StaticVariablesGenerator {
 
-    public static build(variables: Object[], root: Object[], namespace: string): void {
+    public static build(target: string, variables: Object[], root: Object[], namespace: string): void {
         const spaces: string[] = namespace.split('.');
         const rootNS = spaces.shift();
 
         variables.forEach((variable: Object[]) => {
             const v: any = variable[0];
             const branch: any = {
-                type: 'ExpressionStatement',
+                type: Types.ExpressionStatement,
                 expression: { // namespace.foo._instance = undefined
-                    type: 'AssignmentExpression',
+                    type: Types.AssignmentExpression,
                     operator: '=',
                     left: {
-                        type: 'MemberExpression',
+                        type: Types.MemberExpression,
                         object: {
-                            type: 'MemberExpression',
+                            type: Types.MemberExpression,
                             object: {
-                                type: 'Identifier',
+                                type: Types.Identifier,
                                 name: rootNS
                             },
                             property: {
-                                type: 'Identifier',
+                                type: Types.Identifier,
                                 name: spaces.length > 1 ? spaces.join('.') : spaces[0]
                             },
                             computed: false
                         },
                         property: {
-                            type: 'Identifier',
+                            type: Types.Identifier,
                             name: v.key.name
                         },
                         computed: false
@@ -38,7 +40,7 @@ export class StaticVariablesGenerator {
                 delete branch.expression.left.object.object;
                 delete branch.expression.left.object.property;
 
-                branch.expression.left.object.type = 'Identifier';
+                branch.expression.left.object.type = Types.Identifier;
                 branch.expression.left.object.name = rootNS;
             }
 

@@ -12,11 +12,16 @@ export function cli(argv: any) {
         verbose: !!argv.v,
         debug: !!argv.debug,
         ignore: argv.ignore,
+        target: argv.target.toLowerCase(),
         'ignore-pattern': argv['ignore-pattern']
     };
 
     if (argv.ctor) {
-        options['ctor'] = argv.ctor;
+        options.ctor = argv.ctor;
+    }
+
+    if (!/[es]201[57]/.test(options.target)) {
+        options.target = 'es2015';
     }
 
     convert(argv._, options);

@@ -1,4 +1,5 @@
 import { ClassDefinition } from '../typings/ClassDefinition';
+import { Types } from '../defs/Types';
 
 /**
  * Handles the creation of the class statement with namespace assignment.
@@ -25,27 +26,27 @@ export class ClassGenerator {
         const root = namespace.shift();
 
         const ast: ClassDefinition = {
-            type: 'ExpressionStatement',
+            type: Types.ExpressionStatement,
             expression: {
-                type: 'AssignmentExpression',
+                type: Types.AssignmentExpression,
                 operator: '=',
                 left: {
-                    type: 'MemberExpression',
+                    type: Types.MemberExpression,
                     object: {
-                        type: 'Identifier',
+                        type: Types.Identifier,
                         name: root
                     },
                     computed: false
                 },
                 right: {
-                    type: 'ClassExpression',
+                    type: Types.ClassExpression,
                     id: {
-                        type: 'Identifier',
+                        type: Types.Identifier,
                         name: ClassGenerator._ucfirst(namespace.length > 0 ? namespace[namespace.length - 1] : root)
                     },
                     superClass: null,
                     body: {
-                        type: 'ClassBody',
+                        type: Types.ClassBody,
                         body: []
                     }
                 }
@@ -54,13 +55,13 @@ export class ClassGenerator {
 
         if (namespace && namespace.length > 0) {
             ast.expression.left.property = {
-                type: 'Identifier',
+                type: Types.Identifier,
                 name: namespace.join('.')
             };
         } else {
             delete ast.expression.left;
             ast.expression.left = {
-                type: 'Identifier',
+                type: Types.Identifier,
                 name: root,
                 computed: false
             };

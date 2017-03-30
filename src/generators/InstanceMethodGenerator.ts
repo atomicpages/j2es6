@@ -7,11 +7,11 @@ export class InstanceMethodGenerator {
 
     /**
      *
-     * @param ast
-     * @param root
+     * @param ast {object} The tree to operate on.
+     * @param root {object} The location to limit ourselves to in the AST.
      * @param options {Options} The name of the constructor.
      */
-    public static build(ast: any, root: Object[], options: Options): Object[] {
+    public static build(target: string, ast: any, root: Object[], options: Options): Object[] {
         const instanceVariables: any[] = [];
 
         ast.properties.forEach((property: any) => {
@@ -45,25 +45,45 @@ export class InstanceMethodGenerator {
         });
 
         // Instance variables are defined in the constructor in ES2015
+        // Instance variables are defined outside the constructor in ES2017
         if (instanceVariables.length > 0 && !InstanceMethodGenerator._ctorGenerated) {
-            const ctor: any = this._buildConstructor({
-                computed: false,
-                value: {
-                    id: null,
-                    generator: false,
-                    expression: false,
-                    async: false,
-                    params: [],
-                    body: {
-                        type: 'BlockStatement',
-                        body: []
+            if (target === 'es2015') {
+                const ctor: any = this._buildConstructor({
+                    computed: false,
+                    value: {
+                        id: null,
+                        generator: false,
+                        expression: false,
+                        async: false,
+                        params: [],
+                        body: {
+                            type: 'BlockStatement',
+                            body: []
+                        }
                     }
-                }
-            });
+                });
 
-            root.push(ctor);
+                root.push(ctor);
 
-            InstanceVariablesGenerator.build(instanceVariables, ctor.value.body.body);
+                InstanceVariablesGenerator.build(target, instanceVariables, ctor.value.body.body);
+            } else {
+                InstanceVariablesGenerator.build(target, instanceVariables, root);
+
+                root.push(this._buildConstructor({
+                    computed: false,
+                    value: {
+                        id: null,
+                        generator: false,
+                        expression: false,
+                        async: false,
+                        params: [],
+                        body: {
+                            type: 'BlockStatement',
+                            body: []
+                        }
+                    }
+                }));
+            }
         }
 
         return instanceVariables;

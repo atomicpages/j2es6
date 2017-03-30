@@ -5,6 +5,7 @@ import { StaticVariablesGenerator } from './StaticVariablesGenerator';
 import { ClassDefinition } from '../typings/ClassDefinition';
 import { InstanceMethodGenerator } from './InstanceMethodGenerator';
 import { ExtendedClassGenerator } from './ExtendedClassGenerator';
+import { Types } from '../defs/Types';
 // import { InstanceVariablesGenerator } from './InstanceVariablesGenerator';
 
 /**
@@ -32,53 +33,56 @@ export class ProgramGenerator {
         const spaces: string[] = namespace.split('.');
 
         const ast: any = {
-            type: 'Program',
-            body: [
-                {
-                    type: 'ExpressionStatement',
-                    expression: { // window.foo = window.foo || {};
-                        type: 'AssignmentExpression',
-                        operator: '=',
-                        left: { // window
-                            type: 'MemberExpression',
-                            object: {
-                                type: 'Identifier',
-                                name: 'window'
-                            },
-                            property: { // .foo
-                                type: 'Identifier',
-                                name: spaces[0]
-                            },
-                            computed: false
-                        },
-                        right: { // window.foo || {}
-                            type: 'LogicalExpression',
-                            left: { // window.foo
-                                type: 'MemberExpression',
+            program: {
+                type: Types.Program,
+                sourceType: 'script',
+                body: [
+                    {
+                        type: Types.ExpressionStatement,
+                        expression: { // window.foo = window.foo || {};
+                            type: Types.AssignmentExpression,
+                            operator: '=',
+                            left: { // window
+                                type: Types.MemberExpression,
                                 object: {
-                                    type: 'Identifier',
+                                    type: Types.Identifier,
                                     name: 'window'
                                 },
-                                property: {
-                                    type: 'Identifier',
+                                property: { // .foo
+                                    type: Types.Identifier,
                                     name: spaces[0]
                                 },
                                 computed: false
                             },
-                            operator: '||',
-                            right: { // {}
-                                type: 'ObjectExpression',
-                                properties: []
+                            right: { // window.foo || {}
+                                type: Types.LogicalExpression,
+                                left: { // window.foo
+                                    type: Types.MemberExpression,
+                                    object: {
+                                        type: Types.Identifier,
+                                        name: 'window'
+                                    },
+                                    property: {
+                                        type: Types.Identifier,
+                                        name: spaces[0]
+                                    },
+                                    computed: false
+                                },
+                                operator: '||',
+                                right: { // {}
+                                    type: Types.ObjectExpression,
+                                    properties: []
+                                }
                             }
                         }
                     }
-                }
-            ]
+                ]
+            }
         };
 
         if (spaces.length > 1) {
-            ProgramGenerator._createConstReference(ast.body, spaces[0]);
-            ProgramGenerator._handleChainedSpaces(ast.body, spaces);
+            ProgramGenerator._createConstReference(ast.program.body, spaces[0]);
+            ProgramGenerator._handleChainedSpaces(ast.program.body, spaces);
         }
 
         const classDefinition: ClassDefinition = ClassGenerator.build(spaces);
@@ -87,11 +91,11 @@ export class ProgramGenerator {
             if (!options.extendedNamespace) {
                 console.warn('Missing namespace for extended class!');
             } else {
-                const constant = ast.body[ast.body.length - 1];
+                const constant = ast.program.body[ast.program.body.length - 1];
 
                 // Don't redeclare constant if namespaces match
                 if (!constant.expression || !constant.expression.left || !constant.expression.left.object || (constant.expression.left.object.name !== options.extendedNamespace[0])) {
-                    ProgramGenerator._createConstReference(ast.body, options.extendedNamespace[0]);
+                    ProgramGenerator._createConstReference(ast.program.body, options.extendedNamespace[0]);
                 }
             }
 
@@ -100,18 +104,18 @@ export class ProgramGenerator {
 
         const classBodyReference: Object[] = classDefinition.expression.right.body.body;
 
-        ast.body.push(classDefinition);
+        ast.program.body.push(classDefinition);
 
         if (parameters.length === 3) {
             const vars: Object[] = StaticMethodGenerator.build(parameters[1], classBodyReference, spaces);
 
             if (vars && vars.length > 0) {
-                StaticVariablesGenerator.build(vars, ast.body, namespace);
+                StaticVariablesGenerator.build(options.target, vars, ast.program.body, namespace);
             }
 
-            InstanceMethodGenerator.build(parameters[2], classBodyReference, options);
+            InstanceMethodGenerator.build(options.target, parameters[2], classBodyReference, options);
         } else { // no static methods declared
-            InstanceMethodGenerator.build(parameters[1], classBodyReference, options);
+            InstanceMethodGenerator.build(options.target, parameters[1], classBodyReference, options);
         }
 
         return ast;
@@ -138,39 +142,39 @@ export class ProgramGenerator {
             const piece = source.slice(0, index + 1).join('.');
 
             body.push({
-                type: 'ExpressionStatement',
+                type: Types.ExpressionStatement,
                 expression: {
-                    type: 'AssignmentExpression',
+                    type: Types.AssignmentExpression,
                     operator: '=',
                     left: {
-                        type: 'MemberExpression',
+                        type: Types.MemberExpression,
                         object: {
-                            type: 'Identifier',
+                            type: Types.Identifier,
                             name: root
                         },
                         property: {
-                            type: 'Identifier',
+                            type: Types.Identifier,
                             name: piece
                         },
                         computed: false
                     },
                     right: {
-                        type: 'LogicalExpression',
+                        type: Types.LogicalExpression,
                         left: {
-                            type: 'MemberExpression',
+                            type: Types.MemberExpression,
                             object: {
-                                type: 'Identifier',
+                                type: Types.Identifier,
                                 name: root
                             },
                             property: {
-                                type: 'Identifier',
+                                type: Types.Identifier,
                                 name: piece
                             },
                             computed: false
                         },
                         operator: '||',
                         right: {
-                            type: 'ObjectExpression',
+                            type: Types.ObjectExpression,
                             properties: []
                         }
                     }
@@ -187,22 +191,22 @@ export class ProgramGenerator {
      */
     private static _createConstReference(body: Object[], space: string): void {
         body.push({ // const foo = window.foo;
-            type: 'VariableDeclaration',
+            type: Types.VariableDeclaration,
             declarations: [
                 {
-                    type: 'VariableDeclarator',
+                    type: Types.VariableDeclarator,
                     id: {
-                        type: 'Identifier',
+                        type: Types.Identifier,
                         name: space
                     },
                     init: {
-                        type: 'MemberExpression',
+                        type: Types.MemberExpression,
                         object: {
-                            type: 'Identifier',
+                            type: Types.Identifier,
                             name: 'window'
                         },
                         property: {
-                            type: 'Identifier',
+                            type: Types.Identifier,
                             name: space
                         },
                         computed: false

@@ -4,7 +4,6 @@
 		"yargs": "registry:npm/yargs#5.0.0+20160907000723"
 	},
 	"globalDependencies": {
-		"chai": "registry:dt/chai#3.4.0+20160926213833",
-		"mocha": "registry:dt/mocha#2.2.5+20170118061455"
+		"jest": "registry:dt/jest#19.2.0+20170312200138"
 	}
 }

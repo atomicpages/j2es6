@@ -7,7 +7,7 @@ const argv = require('yargs')
     .usage('Usage: $0 <src> [options]')
     .command('<src>', 'Path of files to convert')
     .demandCommand(1, 'You must set the file path before running script!')
-    .example('$0 ~/Desktop/jquery.classes -d ~/Desktop/jquery.classes/es6')
+    .example('$0 myProj/js/*.js -d myProj/js/es6')
     .option('v', {
         alias: 'verbose',
         describe: 'Enable verbose mode',
@@ -23,11 +23,11 @@ const argv = require('yargs')
         describe: 'Where to store files after conversion. Use "console" to dump data to the console. Use "stdout"  to write contents to process.stdout.',
         demandOption: true
     })
-    // .option('target', {
-    // 	describe: 'The ECMAScript version you wish to generate',
-    // 	choices: ['es2015', 'es2017'],
-    // 	default: 'es2015'
-    // })
+    .option('target', {
+        describe: 'The ECMAScript version you wish to generate',
+        choices: ['es2015', 'es2017'],
+        default: 'es2015'
+    })
     .option('ctor', {
         describe: 'The name of the constructor',
         default: 'init'

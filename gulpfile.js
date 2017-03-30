@@ -6,7 +6,6 @@ const typedoc = require('gulp-typedoc');
 const eslint = require('gulp-eslint');
 const tslint = require('gulp-tslint');
 const sourcemaps = require('gulp-sourcemaps');
-// const concat = require('gulp-concat');
 const del = require('del');
 
 gulp.task('clean', function () {
@@ -16,7 +15,7 @@ gulp.task('clean', function () {
 });
 
 gulp.task('tslint', function () {
-    return gulp.src(['**/*.ts', '!node_modules/**', '!dist/**', '!test/**'])
+    return gulp.src(['**/*.ts', '!node_modules/**', '!dist/**', '!__test__/**', '!coverage/**', '!typings/**'])
         .pipe(tslint({
             formatter: 'verbose',
             typeCheck: true
@@ -27,7 +26,7 @@ gulp.task('tslint', function () {
 });
 
 gulp.task('eslint', function () {
-    return gulp.src(['*.js', '**/*.js', '!node_modules/**', '!dist/**', '!test/res/*.js'])
+    return gulp.src(['*.js', '**/*.js', '!node_modules/**', '!dist/**', '!__test__/res/*.js', '!coverage/**'])
         .pipe(eslint())
         .pipe(eslint.format())
         .pipe(eslint.failAfterError());
@@ -92,6 +91,6 @@ gulp.task('watch:scripts', function () {
 });
 
 gulp.task('watch', ['watch:scripts', 'watch:generators']);
-
+gulp.task('lint', ['eslint', 'tslint']);
 gulp.task('default', ['scripts', 'doc']);
 gulp.task('dist', ['scripts']);

@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const acorn = require('acorn');
-const astring = require('astring');
+const bablyon = require('babylon');
+const generate = require('babel-generator').CodeGenerator;
 const traverse = require('ast-traverse');
 const glob = require('glob');
 const gutils = require('gulp-util');
@@ -116,7 +116,7 @@ function _handleFile (file, options, info, stream) {
         let code = '';
         let hit = false;
 
-        let ast = acorn.parse(content, {
+        let ast = bablyon.parse(content, {
             sourceType: 'script',
             ranges: true
             // onComment: function (block, text, start, end) {} // TODO: extract comments and add to generated code
@@ -130,7 +130,7 @@ function _handleFile (file, options, info, stream) {
 
                 if (node.type === 'MemberExpression') {
                     if (_isjQueryClass(node)) {
-                        code = astring(ProgramGenerator.build(parent.arguments, options));
+                        code = new generate(ProgramGenerator.build(parent.arguments, options));
                         hit = true;
 
                         if (!stream) {
@@ -142,7 +142,7 @@ function _handleFile (file, options, info, stream) {
                     options.extendedNamespace = calleeNamespace;
                     hit = true;
 
-                    code = astring(ProgramGenerator.build(parent.expression.arguments, options));
+                    code = generate(ProgramGenerator.build(parent.expression.arguments, options)).generate();
 
                     if (!stream) {
                         _destination(options, code, info);

@@ -1,5 +1,11 @@
 import { ClassGenerator } from '../src/generators/ClassGenerator';
 
+test('Class ClassGenerator is exported', () => {
+    expect(ClassGenerator).toBeDefined();
+    expect(ClassGenerator).toBeTruthy();
+    // expect(ClassGenerator instanceof ClassGenerator).toBeTruthy();
+});
+
 test('Definition produces JSTree-compliant structure', () => {
     const ast = ClassGenerator.build(['foo', 'bar']);
 
@@ -68,3 +74,5 @@ test('Definition produces JSTree-compliant structure with short namespace', () =
         }
     });
 });
+
+
